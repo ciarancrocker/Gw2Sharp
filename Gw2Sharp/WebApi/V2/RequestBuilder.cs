@@ -50,16 +50,22 @@ namespace Gw2Sharp.WebApi.V2
             this.bulkQueryParameterIdName = endpointClient.BulkEndpointIdParameterName;
             this.bulkQueryParameterIdsName = endpointClient.BulkEndpointIdsParameterName;
             this.bulkObjectIdName = endpointClient.BulkEndpointIdObjectName;
+            var queryParamsDict = endpointClient.EndpointQueryParameters;
+            if (endpointClient.IsAuthenticated)
+            {
+                queryParamsDict["access_token"] = connection.AccessToken;
+            }
 #if NETSTANDARD
-            this.queryParams = endpointClient.EndpointQueryParameters.ShallowCopy();
+            this.queryParams = queryParamsDict.ShallowCopy();
 #else
-            this.queryParams = endpointClient.EndpointQueryParameters.AsReadOnly();
+            this.queryParams = queryParamsDict.AsReadOnly();
 #endif
 
             this.connection = connection;
             this.gw2Client = gw2Client;
 
-            this.authorization = endpointClient.IsAuthenticated ? $"{BEARER} {connection.AccessToken}" : null;
+            //this.authorization = endpointClient.IsAuthenticated ? $"{BEARER} {connection.AccessToken}" : null;
+            this.authorization = null;
             this.locale = endpointClient.IsLocalized ? connection.LocaleString : null;
             this.userAgent = connection.UserAgent;
         }
